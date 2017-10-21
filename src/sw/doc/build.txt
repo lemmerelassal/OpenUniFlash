@@ -1,0 +1,20 @@
+These are the build steps for ProgSkeet:
+
+Windows:
+ - Install the Qt SDK
+ - Open ProgSkeet_Flasher.pro in Qt Creator
+ - Choose the Desktop MinGW Debug and Release targets
+ - All the dependencies are included, just launch it
+
+Linux (Debian / Ubuntu):
+ - Run this command to install the dependencies:
+     aptitude install qt-sdk libusb-dev
+ - Change into the progskeet\build\linux directory
+ - Run "./prep"
+ - Run "make"
+
+MacOS X:
+ - port install gt4-mac
+ - port install libusb-legacy
+ - run "qmake" then make
+ProgSkeet_Flasher.app will be built

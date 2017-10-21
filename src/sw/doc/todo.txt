@@ -1,0 +1,19 @@
+list is in order of priorty
+
+diag dual nand read
+add chipselect to each message in nand threads
+add speed display
+add console application that uses the c-api
+filesize reduction
+static linking
+import / export of presets
+add button to "set as default" a specific config
+manual language selection
+new api using gpio and customizable timings
+read cfi starting from 0x00
+manual test crashes when entering 0
+add chip erase
+unlock bypass mode
+
+xbox:
+13:00 <@Rogero> 2- Dumping the nand is fine (MD5 check is good), but writing the nand never worked, the written dump have some difference from the original correct dump

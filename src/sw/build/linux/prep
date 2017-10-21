@@ -1,0 +1,19 @@
+#!/bin/sh -x
+
+arch=$(arch)
+
+case "$arch" in
+    x86)
+	spec=linux-g++-32
+	;;
+    x86_64)
+	spec=linux-g++-64
+	;;
+    *)
+	echo "Unknown spec for $arch"
+	exit 1
+	;;
+esac
+
+qmake ../../ProgSkeet_Flasher.pro -r -spec $spec
+

@@ -1,0 +1,3 @@
+to generate the .cat file for the driver, install winddk and execute this:
+
+Inf2Cat.exe /driver:y:\path\to\progskeet_driver /os:2000,XP_X86,XP_X64,Server2003_X86,Server2003_X64,Vista_X86,Vista_X64,Server2008_X86,Server2008_X64,7_X86,7_X64,Server2008R2_X64

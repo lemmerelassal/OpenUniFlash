@@ -1,0 +1,15 @@
+uf6667
+bmx
+Ago
+
+kado
+
+de_DE: Ago
+fr_FR: bmx
+nl_NL: eussNL
+it_IT: DiGiAnGeL (http://www.digitalangel.it/)
+ru_RU: a_titkov
+sr_CS: Dandza (http://www.ps3srbija.com/)
+ja_JA: Chauliodus
+hu_HU: toxie87
+ar_AR: Abkarino

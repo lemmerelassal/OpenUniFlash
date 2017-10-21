@@ -1,0 +1,3 @@
+#!/bin/sh
+
+qmake ../../ProgSkeet_Flasher.pro -r -spec win32-g++

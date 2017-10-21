@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cpath=$(dirname $(readlink -f $0))
+
+ps_lib="$cpath/lib"
+ps_bin="$cpath/bin"
+
+LD_LIBRARY_PATH="$ps_lib":$LD_LIBRARY_PATH "$ps_bin/YASkeet.linux"

@@ -1,0 +1,23 @@
+Windows
+
+
+Linux
+
+	- you need to install qt4 prior to run the software, qt4 libs are no more embedded in the release.
+	- no need to install libusb, it's embedded in the release.
+	- you may want to alter udev rules to give permissions to the usb device:
+
+		eg. ubuntu 10:
+		$ sudo echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="1988", ATTR{idProduct}=="0001", MODE="0666", GROUP="plugdev"' > /etc/udev/rules.d/52-progskeet.rules
+
+	- add any users that should have permission to access the device to the plugdev group
+
+		$ usermod -a -G plugdev your_user
+
+	- to run it, simply run ProgSkeet_Flasher
+
+MacOS
+
+	- libusb and qt are dynamically embedded
+
+	- simply launch the application

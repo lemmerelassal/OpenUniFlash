@@ -1,0 +1,151 @@
+ProgSkeet Flasher
+-------------------------------
+
+History:
+
+110726: 
+Private flasher release. Only for reviewers. Does not support Flashing due to some difficulties with some NAND Flash devices.
+Note: Production went too fast, so I didn't have enough time to do everything promised yet. It will all come on time. I am working on fixing this ASAP. Tomorrow we are thoroughly testing it to find any bugs that may be hidden. We cannot risk the customer flashing a wrong image and then blaming us for it.
+For now you have to specify the specific values taken from datasheets.
+This goes without saying: DO NOT LEAK.
+You can however tell people that you have the software.
+Please click "test shorts" prior to soldering to ensure you have a working ProgSkeet.
+
+110726-a:
+Added NAND Flashing. Be cautious when using. Not tested on every sort of flash yet.
+Removed "PageSize" and added "Raw" and "LargeBlock" checkboxes.
+
+110727:
+- Added NAND Flashing (confirmed working) with differential flash option (read sector before flashing, eventually saving some time)
+- Optimized NAND Dumping by a whole lot (28kB/s on average :D~~~~~)
+- Fixed NOR dumping
+
+Note: if you get too high speed (more than 1035kB/s) during dump, it's probably got an error and you should let me know about it.
+
+110728:
+- Fixed NOR dumping a little bit (forgot to SetDirections, oops ;o)
+- Fixed NOR flashing (but you can't use it yet, I have to test it thoroughly still)
+
+110729:
+- NOR flashing works 100%, enabled ;) For PS3 take 128kB SectorSize and 128 Sectors
+
+110731:
+- Added Verify option to NOR Dumping/Flashing (make sure you use Differential for best speed results ;D)
+- Fixed bug in NAND 2 dumping
+todo: will add verify for NAND Dumping/Flashing, code is a bit large and I have to get some sleep now :)
+
+110801
+- Fixed: error with regard to addressing of NOR flash
+- Fixed: verify was done on NOR even though the checkbox was left out (=> half speed)
+- Added Verify NAND... you have to stay by the program while it's flashing, because it's going to display a message and continue.
+todo: find a way to display bad blocks; add a counter to maximum attempts of writing before aborting that specific block; add start/end sector
+
+110802
+- Added more selections to Block Count (bigger NANDs)
+
+110803
+- Fixed: issue with "Test Shorts" - ONLY USE THIS WHEN PROGSKEET IS NOT CONNECTED TO ANY DEVICE!!! OTHERWISE IT GIVES FALSE POSITIVE!!!
+
+110807
+- The comboboxes are bigger now, can't be edited and show the values with a scrollbar.
+- Made the NAND part idiot proof. Enjoy.
+
+110808
+- It seems there are problems in Windows 7 and since I don't have Win7, please find the log file in C:\ProgSkeet.log and put it on pastebin.cc so I can take a look... thanks!
+
+110811
+- NOR: Rewrote entire NOR driver. NAND is unmodified.
+- NOR: Write-To-Buffer Programming method optimized (added timeout)
+	Note: not every device supports this. Please consult the datasheet if you are facing problems.
+- NOR: Erase Sector optimized (added timeout)
+- NOR: Forced verify and differential flash
+- NOR: Can't enter values anymore, thanks to RAIDEN (if only some people could read...)
+
+Note: Some NOR flash devices have bad sectors (usually just a few bytes, but enough for entire systems not to work). These will be reported in C:\ProgSkeet.log
+If you have such a device (for example, I heard this happens with RSOD on PS3), you should relocate the sectors to somewhere else or replace the NOR flash device.
+
+110811-A:
+- NOR: Fixed fault in timeout of programming/erasing. Also increased it to 3.5seconds per line and per sector.
+
+110811-B:
+- NOR: Added wait on erase sector.
+
+110811-C:
+- Improved flashing speed
+
+110811-D:
+- Added "tries" for flashing. It is currently hard-coded to 5 tries.
+
+110812:
+- Removed auto-detect NAND because some devices don't give the correct information
+- Removed device combobox (for now, until xml configuration is correctly implemented)
+
+110812-A:
+- Bug fixed: 16 bytes on NAND2 when using Big Block (normal is 64 bytes) (thanks to dospiedras xD)
+
+110813:
+- Diagram by marcan has wrong #NOR_TRI... this is why it either took long or even froze. Won't happen again (it's active-high, not active-low)
+
+110814:
+- Minor adjustments in the GUI to improve speed on NAND.
+
+110815:
+- NOR: added "Alternate Writing Method"... only use this if the flasher freezes without it checked... Thing is, this is supported by most (if not all) NOR flash devices out there BUT requires 4 cycles per write, so it *MAY* be slow.
+- NOR: added sector start & end, in case it's useful... (the image must be the size of "SectorSize * [EndSector-StartSector]" when writing !!!)
+- NAND: too many reported that both flashing as well as dumping freezes so I set a static delay instead of waiting on RDY signal.
+
+110816:
+- NOR: several things related to sector count were fucked due to start/end sector, should be functional now ;)
+- NOR: Optimized the code just a little bit more, getting on average 15kB/s more
+- GUI: Whole thing with speeds and time left fixed
+
+110819:
+- NOR: verification is only done if "verify" is checked and only after it's done flashing
+- NOR: added "ByteSwap" so you don't have to use any additional app to reverse the bytes - goes for dump and flash (for transplanet v1 but you can also use the unaltered version of norunpack this way)
+- Logging: moved the log file to the application directory so you don't need admin rights
+
+111004:
+- New Qt GUI implemented
+- Linux and MacOS X support
+- Added predefined and user presets 
+- Fixed ability to select invalid ranges
+- Added a file patcher
+- Flasher: Added support for canceling running operations
+- Flasher: Added USB device reset
+- Flasher: Added support for erasing as a stand-alone operation
+- Flasher: Added cycle period selection, should help with longer cables
+- Flasher: Added abort on error option
+- Flasher: Reodered operations, full read, full erase, full write
+- Flasher: Fixed bug with unreliable GPIO operation
+- NOR: Added new write mode "Dual word program"
+- NOR: Added display of total flash size
+- NOR: Fixed flashing of the second half of Samsung K8Q2815UQB and likely other dual chip NORs
+- NOR: Added erase block region configuration
+- NOR: Added selection of number of bytes for buffered write
+- NOR: Added support for Spansion S29GL128N90TFIR2
+- NAND: Made custom ranges work
+- NAND: Added Dual-NAND reading. Reads a block from two NANDs simultaneously, thereby doubling the speed.
+
+11xxxx:
+- Flasher: New buffer handling.
+- NOR: Added new timing options. Static timing will be configurable later.
+- NOR: Added preset for Samsung K8P2716UZC-QI4D
+
+111120:
+- NAND: read, erase, program working on single nand
+- NAND: in common pane, a delay parameter is used in nand reading, to slow down the process if bytes are skipping (0x30...0x30). Default value: 50us.
+- NAND: add autodetect parameters, it should also display the brand of the nand chip (Samsung, Hynix, ...)
+
+Notes: 
+*) Differential flash, if you haven't noticed yet, will skip unnecessary writes (compares data on chip vs data in file)
+*) The Ready triggered timing requires you to bridge the RDY and the GP4 pins together (still needs to be connected to the target RDY)
+
+111122:
+- Flasher: Fixed the usb freeze
+- Added winusb drivers
+- NAND: rearrange nand options, raw is not part of nand structure
+
+
+yours truly,
+
+uf6667

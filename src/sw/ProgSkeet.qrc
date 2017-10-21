@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>res/progskeet.ico</file>
+        <file>res/pictures/NAND_B.jpg</file>
+        <file>res/pictures/NAND_A.jpg</file>
+    </qresource>
+</RCC>
