@@ -1,6 +1,6 @@
-# OpenProgSkeet
+# OpenUniFlash
 
-OpenProgSkeet is the same universal programmer you know and love from 2012. After a lot of work by Ago (Axel Gembe) , BMX and myself, it's time to let go of it and let the public make it an even better product.
+OpenUniFlash is the same universal programmer you know and love from 2012. After a lot of work by Ago (Axel Gembe) , BMX and myself, it's time to let go of it and let the public make it an even better product.
 
 You can now look into how this thing works and that it's very easy to use.
 
