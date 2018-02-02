@@ -4,7 +4,7 @@ OpenUniFlash is the same universal programmer you know and love from 2012. After
 
 You can now look into how this thing works and that it's very easy to use.
 
-All you need is a FIFO capable interface, for example, FT2232. Or maybe something newer - I took a big break from electronics and dedicated myself to studying chemistry in 2013 (more specifically - drug design. I even won in the first round of a competition earlier this year).
+All you need is a FIFO capable interface, for example, FT2232. Or maybe something newer. I recently found Rudi Usselmann's USB core components on OpenCores and I guess you could use that, too.
 
 The directory structure should be obvious. Feel free to contribute.
 
