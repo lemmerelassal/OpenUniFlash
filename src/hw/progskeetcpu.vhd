@@ -1,9 +1,7 @@
--- progskeetcpu.vhd
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
---use IEEE.NUMERIC_STD.ALL;
 
 entity progskeetcpu is
     Port (
@@ -16,15 +14,11 @@ entity progskeetcpu is
 		fifo_wdata : out std_logic_vector(7 downto 0);
 		fifo_rdata : in std_logic_vector(7 downto 0);
 		
-		
-		--GPIO : inout std_logic_vector(31 downto 0);
-		
 		switch : in std_logic;
 		led : out std_logic;
 		
 		SPI_MISO : in std_logic;
 		SPI_MOSI, SPI_SCK, SPI_CS: out std_logic
---		current_state : out std_logic_vector(7 downto 0)
 );
 
 end progskeetcpu;
@@ -576,7 +570,7 @@ begin
 									inc_substate <= '1';
 								end if;
 							when X"04" =>
-								dataselect <= spi; --i_fifo_wdata <= spi_data;
+								dataselect <= spi;
 								
 								if i_fifo_we = '0' then
 									n_fifo_we <= not fifo_full;
@@ -621,14 +615,14 @@ begin
 					when read_timebase => --X"C4" => -- read timebase
 						case substate(7 downto 0) is
 							when X"01" =>
-								dataselect <= timebase_0; --i_fifo_wdata <= timebase(7 downto 0);
+								dataselect <= timebase_0;
 								if i_fifo_we = '0' then
 									n_fifo_we <= not fifo_full;
 								else
 									inc_substate <= '1';
 								end if;
 							when X"02" =>
-								dataselect <= timebase_1; --i_fifo_wdata <= timebase(15 downto 8);
+								dataselect <= timebase_1;
 								if i_fifo_we = '0' then
 									n_fifo_we <= not fifo_full;
 								else
@@ -640,13 +634,13 @@ begin
 						
 					
 					when end_of_packet => --X"FE" => -- end of packet
-						dataselect <= nothing; --i_fifo_wdata <= X"AA";
+						dataselect <= nothing;
 						if i_fifo_we = '0' then
 							n_fifo_we <= not fifo_full;
 						else
 							n_state <= 3;
 						end if;
-					when padding => --X"FF" =>
+					when padding =>
 						n_state <= 0;
 						
 						
@@ -660,15 +654,12 @@ begin
 
 				
 			when 3 =>
-				--if((cmd = X"03") or (cmd = X"04")) then
 				if (cmd = write_data) or (cmd = read_data) then
 					inc_address <= address(31);
 				end if;
 				
-				--n_drive_enable <= '0';
-				
 				dec_cCount <= '1';
-				rst_substate <= '1'; --n_substate <= 0; --rst_substate <= '1';
+				rst_substate <= '1';
 				if cCount = X"0000" then
 					n_state <= 0;
 				else
@@ -700,7 +691,6 @@ end process;
 -- ..
 -- P49	DQ15
 
---drive_enable <= '1' when cmd = write_data else '0';
 
 process(P, double, byteswap)
 begin
@@ -716,7 +706,7 @@ begin
 end process;
 
 
-process(clk,rst_local)--P, isnor, precharge, address, i_GPIO, i_WE, i_OE, address, output_data, tristate, drive_enable, tgpio)
+process(clk,rst_local)
 begin
 	if rst_local = '0' then
 		P <= (others => 'Z');
@@ -732,16 +722,9 @@ begin
 	
 		
 		if (tristate = '0') then
-			if (drive_enable = '1') then --and (tristate = '0') then
+			if (drive_enable = '1') then
 				-- if(double = '1') then
 					P(49 downto 34) <= output_data(15 downto 0);
-				-- else
-					-- if byteswap = '1' then
-						-- P(49 downto 42) <= output_data(15 downto 8);
-					-- else
-						-- P(41 downto 34) <= output_data(7 downto 0);
-					-- end if;
-				-- end if;
 			end if;
 			
 			if isnor = '1' then
@@ -759,12 +742,7 @@ begin
 				P(9) <= i_WE;
 				P(10) <= i_OE;
 				
-				
-				-- if(precharge_done = '1') then
 					RDY <= P(8);
-				-- else
-					-- RDY <= '0';
-				-- end if;
 				
 				if(precharge = '1') then
 				 	P(8) <= 'H';
@@ -799,13 +777,11 @@ begin
 				end if;
 						
 				
-				--P(2) <= 'Z';
 				P(3) <= i_GPIO(4); -- added 130504 / 1841
 				P(4) <= i_GPIO(2);
 				P(5) <= i_GPIO(3);
 				P(8) <= i_GPIO(1); 
 				P(9) <= i_GPIO(0); 
-				--P(26) <= i_GPIO(13); 
 				P(27) <= i_GPIO(8);
 				P(28) <= i_GPIO(10);
 				P(29) <= i_GPIO(9);
