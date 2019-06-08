@@ -8,15 +8,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity progskeetcpu is
     Port (
 		CLK, RST_LOCAL: in std_logic;
---		ADDR :	out std_logic_vector(22 downto 0);
 		P : inout std_logic_vector(49 downto 1);
 		
-		--DQ :	inout std_logic_vector(15 downto 0);
---		OE, WE : out std_logic;
-		--RDY : in std_logic;
---		v_set_int, v_set_feature : in std_logic;
---		wValue, wIndex : in std_logic_vector(15 downto 0);
-		--vendor_data : out std_logic_vector(15 downto 0);
 		
 		fifo_empty, fifo_full : in std_logic;
 		fifo_re, fifo_we : out std_logic;
@@ -54,7 +47,7 @@ signal inc_address, set_address_0, set_address_1, set_address_2, set_address_3 :
 signal delay, n_delay, delay_counter, cmd_reg, i_fifo_wdata : std_logic_vector(7 downto 0);
 signal state, n_state : integer;
 
-signal substate, restore_state, n_substate : std_logic_vector(15 downto 0); --integer range 0 to 15;
+signal substate, restore_state, n_substate : std_logic_vector(15 downto 0);
 signal n_spi_state, spi_state : integer range 0 to 15;
 
 
@@ -62,11 +55,10 @@ signal dec_cCount, set_cCount_0, set_cCount_1 : std_logic;
 signal rst_delay_counter, done_delay_counter : std_logic;
 signal cCount, output_data, i_GPIO, directions, n_directions,
 --vtrigger, n_vtrigger, mtrigger, n_mtrigger, 
-inputdata, tgpio : std_logic_vector(15 downto 0);-- := X"0000";
+inputdata, tgpio : std_logic_vector(15 downto 0);
 signal set_output_data_0, set_output_data_1 : std_logic;
 signal DQ, p_DQ, cnt_timeout, temp, n_temp : std_logic_vector(15 downto 0);
 
---signal header_data : std_logic_vector(31 downto 0);
 
 signal double, n_double, drive_enable, n_drive_enable, tristate, n_tristate,
 i_OE, i_WE, waitrdy, n_waitrdy, byteswap, n_byteswap : std_logic;
@@ -80,12 +72,7 @@ signal toggle_mask, timeout_mask, timeout_value, spi_data : std_logic_vector(7 d
 signal set_last_rdy, last_rdy, set_tgpio_0, set_tgpio_1, do_xor, set_cmd, inc_substate, rst_substate, set_config, set_directions_0, set_directions_1,
 i_fifo_we, i_fifo_re, n_fifo_we, set_spi_data: std_logic;
 
---type arr is array (0 to 255) of std_logic_vector(17 downto 0);
---signal mem : arr;
-
  signal precharge : std_logic;
---, precharge_done : std_logic;
--- signal precharge_cnt : std_logic_vector(3 downto 0);
 
 constant LEGACY_PIN_A22 : integer := 31;
 constant LEGACY_PIN_A0 : integer := 9;
@@ -97,8 +84,6 @@ constant LEGACY_PIN_GP5 : integer := 0;
 
 
 signal i_SPI_MOSI, i_SPI_MISO, i_SPI_SCK, n_SPI_MOSI, n_SPI_SCK, i_led, n_led, done_spi, do_spi : std_logic;
-
---constant ref_timeout : std_logic_vector(15 downto 0) := X"00FF";
 
 -- GP0 - CLE
 -- GP1 - ALE
@@ -125,40 +110,6 @@ signal rdy_value, rdy_mask : std_logic_vector(7 downto 0);
 
 begin
 
---rst_local <= (not USB_RST) and RST;
-
---ADDR <= address(22 downto 0) when tristate = '0' else (others => 'Z');
--- process(CLK)
--- begin
-	-- if rising_edge(CLK) then
-		-- if tristate = '0' then
-			-- --ADDR <= address(22 downto 0);
-		-- else
-			-- ADDR <= (others => 'Z');
-		-- end if;
-	-- end if;
--- end process;
-
---ADDR <= conv_std_logic_vector(state, 23) when tristate = '0' else (others => 'Z');
-
---GPIO(0) <= i_CLE;
---GPIO(1) <= i_ALE;
---GPIO(2) <= i_CE;
---GPIO(3) <= i_WP;
---GPIO(4) <= 'Z';
---RDY <= GPIO(4);
---GPIO(5) <= i_OE;
---GPIO(6) <= OE_double;
---GPIO(7) <= i_WE;
---GPIO(8) <= WE_double;
-
---header_data <= wValue & wIndex;
-
---DQ <= (others => 'Z') when (drive_enable = '0') or (tristate = '1') else output_data;
---OE <= i_OE when tristate = '0' else 'Z';
---WE <= i_WE when tristate = '0' else 'Z';
---GPIO <= i_GPIO when tristate = '0' else (others => 'Z');
---vendor_data <= i_GPIO;
 
 process(address, done_delay_counter, state, double, delay, cCount,
 directions, tristate, waitrdy, byteswap, 
@@ -190,8 +141,6 @@ begin
 		n_tristate <= tristate;
 		n_waitrdy <= waitrdy;
 		n_byteswap <= byteswap;
---		n_vtrigger <= vtrigger;
---		n_mtrigger <= mtrigger;
 		set_address_0 <= '0';
 		set_address_1 <= '0';
 		set_address_2 <= '0';
@@ -203,7 +152,6 @@ begin
 		do_xor <= '0';
 		i_fifo_re <= '0';
 		n_fifo_we <= '0';
-		--i_fifo_wdata <= X"00";
 		rst_timeout <= '1';
 		
 		rst_delay_counter <= '1';
@@ -224,7 +172,6 @@ begin
 		
 		set_last_rdy <= '0';
 		
-		--n_substate <= substate;
 		
 		inc_substate <= '0';
 		rst_substate <= '0';
@@ -244,8 +191,6 @@ begin
 		case state is
 			when 0 =>
 				n_led <= '0';
-				--n_delay_counter <= (others => '0');
-
 				
 				if fifo_empty /= '1' then
 					i_fifo_re <= '1';
@@ -253,7 +198,7 @@ begin
 				end if;
 			when 1 =>
 				set_cmd <= '1';
-				rst_substate <= '1'; --n_substate <= 0;
+				rst_substate <= '1'; 
 				n_state <= 2;
 			when 2 =>
 				
@@ -261,14 +206,14 @@ begin
 					when get_version => --X"00" => -- get version
 						case substate(7 downto 0) is
 							when X"01" =>
-								dataselect <= version_0;--	i_fifo_wdata <= version(7 downto 0);
+								dataselect <= version_0;
 								if i_fifo_we = '0' then
 									n_fifo_we <= not fifo_full;
 								else
 									inc_substate <= '1';
 								end if;
 							when X"02" =>
-								dataselect <= version_1; --	i_fifo_wdata <= version(15 downto 8);
+								dataselect <= version_1;
 								if i_fifo_we = '0' then
 									n_fifo_we <= not fifo_full;
 								else
@@ -285,14 +230,14 @@ begin
 							when X"01" =>
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 1;
+									inc_substate <= '1';
 								end if;
 							when X"02" =>
 								set_cCount_0 <= '1';
 								
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 2;
+									inc_substate <= '1';
 								end if;
 							when X"04" =>
 								set_cCount_1 <= '1';
@@ -306,25 +251,25 @@ begin
 							when X"01" =>
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 1;
+									inc_substate <= '1';
 								end if;
 							when X"02" =>
 								set_address_0 <= '1';
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 2;
+									inc_substate <= '1';
 								end if;
 							when X"04" =>
 								set_address_1 <= '1';
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 3;
+									inc_substate <= '1';
 								end if;
 							when X"08" =>
 								set_address_2 <= '1';
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 4;
+									inc_substate <= '1';
 								end if;
 							when X"10" =>
 								set_address_3 <= '1';
@@ -342,23 +287,23 @@ begin
 								rst_timeout <= '0';
 								precharge <= '0';
 								if (waitrdy = '1' and ((RDY = '1') or (done_timeout = '1'))) or (waitrdy = '0') then
-									inc_substate <= '1'; --n_substate <= 1;
+									inc_substate <= '1';
 								end if;
 							when X"02" =>
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 2;
+									inc_substate <= '1';
 								end if;
 							when X"04" =>
 								set_output_data_0 <= not byteswap;
 								set_output_data_1 <= byteswap;
 								if double = '1' then
 									if fifo_empty = '0' then
-										inc_substate <= '1'; --n_substate <= 3;
+										inc_substate <= '1';
 										i_fifo_re <= '1';
 									end if;
 								else
-									inc_substate <= '1'; --n_substate <= 4;
+									inc_substate <= '1';
 								end if;
 								
 								
@@ -367,23 +312,23 @@ begin
 									set_output_data_0 <= byteswap;
 									set_output_data_1 <= not byteswap;
 								end if;
-								inc_substate <= '1'; --n_substate <= 4; --inc_substate <= '1';
+								inc_substate <= '1';
 							when X"10" =>
 								do_xor <= '1';
-								inc_substate <= '1'; --n_substate <= 5; --inc_substate <= '1';
+								inc_substate <= '1';
 							when X"20" =>
 								rst_delay_counter <= '0';
 								if done_delay_counter = '1' then
-									inc_substate <= '1'; --n_substate <= 6; --inc_substate <= done_delay_counter;
+									inc_substate <= '1';
 								end if;
 							when X"40" =>
 								do_xor <= '1';
-								inc_substate <= '1'; --n_substate <= 7; --inc_substate <= '1';
+								inc_substate <= '1';
 							when X"80" =>
 								rst_delay_counter <= '0';
 								if done_delay_counter = '1' then
-									n_state <= 3; -- state 3 decrements cCounter and re-executes command (if counter is not 0) and increment address
-									inc_substate <= '1'; --n_substate <= 8;--inc_substate <= done_delay_counter;
+									n_state <= 3;
+									inc_substate <= '1';
 								end if;
 							when others =>
 								n_state <= 0;
@@ -393,38 +338,37 @@ begin
 						n_drive_enable <= '0';
 						case substate(7 downto 0) is
 							when X"01" =>
-								--n_drive_enable <= '0';
 								rst_timeout <= '0';
 								precharge <= '0';
 								if (waitrdy = '1' and ((RDY = '1') or (done_timeout = '1'))) or (waitrdy = '0') then
-									inc_substate <= '1'; --n_substate <= 1; --inc_substate <= '1';
+									inc_substate <= '1';
 								end if;
 							when X"02" =>
 								do_xor <= '1';
-								inc_substate <= '1'; --n_substate <= 2; --inc_substate <= '1';
+								inc_substate <= '1';
 							when X"04" =>
 								rst_delay_counter <= '0';
 								n_temp <= p_dq;
 								if(done_delay_counter = '1') then
-									inc_substate <= '1'; --n_substate <= 3; --inc_substate <= done_delay_counter;
+									inc_substate <= '1';
 								end if;
 							when X"08" =>
 								if byteswap = '0' then
-									dataselect <= temp_0; --i_fifo_wdata <= DQ(7 downto 0);
+									dataselect <= temp_0;
 								else
-									dataselect <= temp_1; --i_fifo_wdata <= DQ(15 downto 8);
+									dataselect <= temp_1;
 								end if;
 								
 								if i_fifo_we = '0' then
 									n_fifo_we <= not fifo_full;
 								else
-									inc_substate <= '1'; --n_substate <= 1;
+									inc_substate <= '1';
 								end if;
 							when X"10" =>
 								if byteswap = '1' then
-									dataselect <= temp_0; --i_fifo_wdata <= DQ(7 downto 0);
+									dataselect <= temp_0;
 								else
-									dataselect <= temp_1; --i_fifo_wdata <= DQ(15 downto 8);
+									dataselect <= temp_1;
 								end if;
 								
 								if (double = '0') or (i_fifo_we = '1') then
@@ -435,12 +379,12 @@ begin
 								
 							when X"20" =>
 								do_xor <= '1';
-								inc_substate <= '1'; --n_substate <= 6; --inc_substate <= '1';
+								inc_substate <= '1';
 							when X"40" =>
 								rst_delay_counter <= '0';
 								if done_delay_counter = '1' then
 									n_state <= 3; -- state 3 decrements cCounter and re-executes command (if counter is not 0) and increment address
-									inc_substate <= '1'; --n_substate <= 7; --inc_substate <= done_delay_counter;
+									inc_substate <= '1';
 								end if;
 							when others =>
 								n_state <= 0;
@@ -452,7 +396,7 @@ begin
 							when X"01" =>
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 1; --inc_substate <= not fifo_empty;
+									inc_substate <= '1';
 								end if;
 							when X"02" =>
 								set_config <= '1';
@@ -466,13 +410,13 @@ begin
 							when X"01" =>
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 1; --inc_substate <= not fifo_empty;
+									inc_substate <= '1';
 								end if;
 							when X"02" =>
 								set_tgpio_0 <= '1';
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 2; --inc_substate <= not fifo_empty;
+									inc_substate <= '1';
 								end if;
 							when X"04" =>
 								set_tgpio_1 <= '1';
@@ -487,13 +431,13 @@ begin
 							when X"01" =>
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 1; --inc_substate <= not fifo_empty;
+									inc_substate <= '1'; 
 								end if;
 							when X"02" =>
 								set_directions_0 <= '1';
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 2; --inc_substate <= not fifo_empty;
+									inc_substate <= '1';
 								end if;
 							when X"04" =>
 								set_directions_1 <= '1';
@@ -522,13 +466,13 @@ begin
 							when X"01" =>
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 1; --inc_substate <= not fifo_empty;
+									inc_substate <= '1'; 
 								end if;
 							when X"02" =>
 								set_timeout_0 <= '1';
 								if fifo_empty = '0' then
 									i_fifo_re <= '1';
-									inc_substate <= '1'; --n_substate <= 2; --inc_substate <= not fifo_empty;
+									inc_substate <= '1';
 								end if;
 							when X"04" =>
 								set_timeout_1 <= '1';
@@ -600,9 +544,7 @@ begin
 								n_state <= 0;
 						end case;
 											
-				
-				-- ADD A WAIT FUNCTION FOR SPECIFIC PINS!!!!!!!!!!!!!!!!!!!!!!!!!!
-				-- DON'T YOU FUCKING FORGET!!!!!!!!!!!!!!!!!!!!!!!!!
+
 					when spi_write => --X"0E" => -- SPI WRITE
 						case substate(7 downto 0) is
 							when X"01" =>
@@ -655,9 +597,6 @@ begin
 								set_last_rdy <= '1';
 								n_state <= 0;
 							end if;
-						--else
-						--	n_state <= 0;
-						--end if;
 				
 
 
@@ -670,9 +609,6 @@ begin
 								set_last_rdy <= '1';
 								n_state <= 0;
 							end if;
-						--else
-						--	n_state <= 0;
-						--end if;
 						
 						
 					when precharge_rdy => --X"12" => -- precharge rdy
@@ -750,38 +686,6 @@ begin
 		end case;
 end process;
 
--- process(tristate, directions, i_GPIO, i_OE, i_WE, byteswap)
--- begin
-	-- if tristate = '1' then
-		-- GPIO <= (others => 'Z');
-	-- else
-		-- for i in 13 downto 0 loop
-			-- if(directions(i) = '1') then
-				-- GPIO(i) <= i_GPIO(i);
-			-- else
-				-- GPIO(i) <= 'Z';
-			-- end if;
-		-- end loop;
-		
-		-- if(byteswap = '1') then
-			-- GPIO(15) <= i_OE;
-			-- GPIO(14) <= i_WE;
-		-- else
-			-- if(directions(15) = '1') then
-				-- GPIO(15) <= i_GPIO(15);
-			-- else
-				-- GPIO(15) <= 'Z';
-			-- end if;
-			
-			-- if(directions(14) = '1') then
-				-- GPIO(14) <= i_GPIO(14);
-			-- else
-				-- GPIO(14) <= 'Z';
-			-- end if;
-		-- end if;
-	-- end if;
--- end process;
-
 
 -- P1	GP6
 -- ..
@@ -824,11 +728,7 @@ begin
 	--rdy <= '0';
 	P(49 downto 1) <= (others => 'Z');
 	
-	
-	
-	
-	
-	
+		
 	
 		
 		if (tristate = '0') then
@@ -845,18 +745,6 @@ begin
 			end if;
 			
 			if isnor = '1' then
-				-- for i in 6 downto 0 loop
-					-- inputdata(i) <= P(7-i);
-				-- end loop;
-				
-				
-				-- for i in 6 downto 0 loop
-					-- P(7-i) <= i_GPIO(i);
-				-- end loop;
-				
-				-- for i in 3 downto 0 loop
-					-- inputdata(i) <= P(7-i);
-				-- end loop;
 				
 				for i in 3 downto 0 loop
 					P(7-i) <= i_GPIO(i);
@@ -909,12 +797,7 @@ begin
 						P(26) <= 'Z';
 					end if;
 				end if;
-			
-				-- if(precharge_done = '1') then
-				-- else
-					-- RDY <= '0';
-				-- end if;
-				
+						
 				
 				--P(2) <= 'Z';
 				P(3) <= i_GPIO(4); -- added 130504 / 1841
@@ -928,21 +811,7 @@ begin
 				P(29) <= i_GPIO(9);
 				P(32) <= i_GPIO(11);
 				P(33) <= i_GPIO(12);
-			
-				--RDY <= P(2);
-				-- inputdata(4) <= P(3); -- added 130504 / 1843
-				-- inputdata(2) <= P(4);
-				-- inputdata(3) <= P(5);
-				-- inputdata(1) <= P(8);
-				-- inputdata(0) <= P(9);
-				----inputdata(13) <= P(26);
-				-- inputdata(8) <= P(27);
-				-- inputdata(10) <= P(28);
-				-- inputdata(9) <= P(29);
-				---- inputdata(15) <= P(30); -- i_OE
-				---- inputdata(14) <= P(31); -- i_WE
-				-- inputdata(11) <= P(32);
-				-- inputdata(12) <= P(33);
+
 			end if;
 		else
 			P(49 downto 1) <= (others => 'Z');
@@ -951,16 +820,6 @@ begin
 	end if;
 end process;
 	
-	
-	
-	
-	
-	
-			
-
---current_state <= conv_std_logic_vector(state, 8);
-
-
 
 process(RST_LOCAL, CLK)
 begin
@@ -973,8 +832,6 @@ begin
 		output_data <= (others => '0');
 		delay <= (others => '0');
 		directions <= (others => '0');
---		vtrigger <= (others => '0');
---		mtrigger <= (others => '0');
 		double <= '0';
 		tristate <= '1';
 		waitrdy <= '0';
@@ -982,39 +839,23 @@ begin
 		tgpio <= (others => '1');
 		temp <= (others => '0');
 		isnor <= '0';
-		
-		-- precharge <= '0';
-		-- precharge_done <= '1';
-		-- precharge_cnt <= X"F";
-		
 		ref_timeout <= X"0FFF";
-		
 		timeout_mask <= X"00";
 		timeout_value <= X"00";
 		toggle_mask <= X"00";
 		temp <= X"0000";
 		i_SPI_MOSI <= '0'; i_SPI_SCK <= '1';
-		
 		last_rdy <= '1';
-
-		
 		timebase <= X"0000";
-		
 		i_OE <= '1';
 		i_WE <= '1';
 		cmd_reg <= X"00";
 		i_led <= '1';
 		led <= '0';
-		
 		spi_state <= 0;
-		
 		spi_data <= X"00";
-		
 		i_SPI_MOSI <= '0';
 		i_SPI_SCK <= '0';
-		-- fifo_wdata <= X"00";
-		-- fifo_we <= '0';
-		-- fifo_re <= '0';
 		
 		done_delay_counter <= '0';
 	elsif rising_edge(CLK) then
@@ -1052,22 +893,6 @@ begin
 		if set_timeout_1 = '1' then
 			ref_timeout(15 downto 8) <= fifo_rdata;
 		end if;
-		
-		-- if set_poll_type = '1' then
-			-- poll_type <= fifo_rdata;
-		-- end if;
-	
-		-- precharge_cnt <= precharge_cnt + X"1";
-		
-		-- case precharge_cnt is
-			-- when X"0" | X"1" | X"2" | X"3" =>
-				-- precharge <= '1';
-			-- when X"F" =>
-				-- precharge_done <= '1';
-			-- when others =>
-				-- precharge <= '0';
-				-- precharge_done <= '0';
-		-- end case;
 	
 	
 		isnor <= n_isnor;
@@ -1107,19 +932,15 @@ begin
 		if (rst_delay_counter = '1') or ((i_OE = '0') and (DQ /= p_DQ)) then
 			delay_counter <= delay;
 		else
-			if delay_counter /= X"00" then --done_delay_counter = '0' then
+			if delay_counter /= X"00" then
 				delay_counter <= delay_counter - X"01";
 			else
 				done_delay_counter <= '1';
 			end if;
 		end if;
 		
-		--delay_counter <= n_delay_counter;
 
 		drive_enable <= n_drive_enable;
-		--i_GPIO <= n_i_GPIO;
-		--cCount <= n_cCount;
-		--output_data <= n_output_data;
 		if set_output_data_0 = '1' then
 			output_data(7 downto 0) <= fifo_rdata;
 		end if;
@@ -1198,7 +1019,6 @@ end process;
 process(rst_local,clk)
 begin
 	if rst_local = '0' then
-		--fifo_wdata <= X"00";
 		i_fifo_we <= '0';
 		fifo_we <= '0';
 	elsif rising_edge(clk) then
@@ -1269,12 +1089,12 @@ begin
 		if rst_substate = '1' then
 				substate <= restore_state;
 		elsif inc_substate = '1' then
-				substate <= n_substate; -- substate + 1;
+				substate <= n_substate;
 		end if;
 	end if;
 end process;
 
-n_substate <= substate(14 downto 0) & '0'; --substate + 1;
+n_substate <= substate(14 downto 0) & '0';
 
 process(rst_local, clk)
 begin
@@ -1293,8 +1113,6 @@ begin
 	done_spi <= '0';
 	n_spi_state <= spi_state;
 	n_SPI_SCK <= i_SPI_SCK;
-	--n_SPI_MOSI <= i_SPI_MOSI;
-	--n_SPI_MOSI <= spi_data(7);
 	case spi_state is
 		when 0 =>
 			if (do_spi = '1') then
@@ -1317,8 +1135,6 @@ end process;
 
 process(p_dq, spi_data, timebase, dataselect, temp)
 begin
-
---	if rising_edge(clk) then
 		case dataselect is
 			when version_0 =>
 				i_fifo_wdata <= version(7 downto 0);
@@ -1341,7 +1157,6 @@ begin
 			when nothing =>
 				i_fifo_wdata <= X"00";
 		end case;
---	end if;
 end process;
 			
 process(cmd_reg)
@@ -1394,16 +1209,12 @@ begin
 	end case;
 end process;
 
+
+-- Note: SPI looks good in testbench, doesn't work in implementation
 -- SCK		0101010101010101
 -- n_SCK	1010101010101010
 -- MOSI		X7
 -- n_MOSI	7
-
-			
---done_timeout <= '1' when cnt_timeout = X"0000" else '0';
---done_delay_counter <= '1' when delay_counter = X"0000" else '0';
-
---led <= not rst_timeout;
 
  
  SPI_SCK <= i_SPI_SCK when tristate = '0' else 'Z';
