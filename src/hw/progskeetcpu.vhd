@@ -6,7 +6,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity progskeetcpu is
     Port (
 		CLK, RST_LOCAL: in std_logic;
-		P : inout std_logic_vector(49 downto 1);
+		P : inout std_logic_vector(49 downto 1); -- 50 pin connector on the board
 		
 		
 		fifo_empty, fifo_full : in std_logic;
@@ -48,7 +48,6 @@ signal n_spi_state, spi_state : integer range 0 to 15;
 signal dec_cCount, set_cCount_0, set_cCount_1 : std_logic;
 signal rst_delay_counter, done_delay_counter : std_logic;
 signal cCount, output_data, i_GPIO, directions, n_directions,
---vtrigger, n_vtrigger, mtrigger, n_mtrigger, 
 inputdata, tgpio : std_logic_vector(15 downto 0);
 signal set_output_data_0, set_output_data_1 : std_logic;
 signal DQ, p_DQ, cnt_timeout, temp, n_temp : std_logic_vector(15 downto 0);
@@ -106,15 +105,14 @@ begin
 
 
 process(address, done_delay_counter, state, double, delay, cCount,
-directions, tristate, waitrdy, byteswap, 
---vtrigger, mtrigger,
+directions, tristate, waitrdy, byteswap,
 p_dq, rdy, fifo_empty, fifo_full, i_fifo_we, done_timeout, temp, isnor, toggle_mask, timeout_value, timeout_mask,
 
-done_spi, --spi_data,
+done_spi,
 
 last_rdy, drive_enable,
 
-cmd, substate, i_led--, timebase, 
+cmd, substate, i_led
 )
 begin
 	
@@ -592,8 +590,6 @@ begin
 								n_state <= 0;
 							end if;
 				
-
-
 						
 					when wait_rdy_high => --X"11" => -- wait rdy high
 						precharge <= '0';
@@ -643,10 +639,6 @@ begin
 					when padding =>
 						n_state <= 0;
 						
-						
-					
-						
-						
 					when others =>
 						n_led <= '1';
 
@@ -665,12 +657,6 @@ begin
 				else
 					n_state <= 2;
 				end if;
-
-
-				
-
-				
-
 			
 			when others =>
 				n_state <= 0;
@@ -717,13 +703,9 @@ begin
 		p_DQ <= DQ;
 	--rdy <= '0';
 	P(49 downto 1) <= (others => 'Z');
-	
-		
-	
 		
 		if (tristate = '0') then
 			if (drive_enable = '1') then
-				-- if(double = '1') then
 					P(49 downto 34) <= output_data(15 downto 0);
 			end if;
 			
